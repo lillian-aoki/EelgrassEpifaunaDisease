@@ -1,4 +1,10 @@
 # 01-DataPrep
+## Last updated: 2024-03-19 by Lillian Aoki
+
+## This script aggregates data for analysis of grazing impacts on eelgrass wasting disease
+## Input datasets are derived elsewhere (i.e. project data)
+## Output datasets are derived from this script and used in subsequent scripts
+## Data dictionary is available for the output datasets
 
 library(tidyverse)
 
