@@ -1,18 +1,21 @@
 ## 02-Supplemental Figures 
 
-# Last updated: 2024-03-19 by Lillian Aoki
+# Last updated: 2024-03-21 by Lillian Aoki
 
-## This script produces figures for 
+## This script produces supplemental figures for the SEM manuscript: 
 ## (1) the distribution of epifauna across latitudes,
 ## (2) comparison of seagrass structure and disease prevalence, 
 ## (3) a map of study locations with temperature 
-## (4) relative abundace of eelgrass grazers within epifauna community
+## (4) relative abundance of eelgrass grazers within epifauna community
+## (5) mosaic plot of grazing scar and disease prevalence
 
+# libraries ####
 library(tidyverse)
 library(patchwork)
 library(tidyverse)
 library(sf)
 library(rnaturalearth)
+library(ggmosaic)
 
 # data input ####
 region_order <- c("AK", "BC", "WA", "OR", "BB", "SD")
@@ -22,6 +25,7 @@ site_dat$Region <- ordered(site_dat$Region, levels=region_order)
 
 epi <- read_csv("data/input/EGWD_transect_data_v20230307_big_epi_with_BB_transect.csv")
 meta <- read_csv("data/input/combined_site_metadata.csv")
+sem_dat <- read_csv("data/output/epiphyte_SEM_data_all_large.csv")
 
 # epifauna distributions ####
 amp_plot <- ggplot(site_dat, aes(x=Latitude, y=Ampithoid_large, color=fYear))+
@@ -187,3 +191,29 @@ ggplot(epi_summ_long, aes(x=meadow, y=value, fill=taxon))+
         legend.text = element_text(hjust = 0))
 
 ggsave("figures/rel_abun.tiff", width=8, height = 6)
+
+# grazing-prevalence mosaic ####
+sem_dat$fGrazing <- as.factor(sem_dat$GrazingScars)
+sem_dat$fGrazing <- recode_factor(sem_dat$fGrazing, "0" = "Absent", "1" = "Present")
+sem_dat$fYear <- as.factor(sem_dat$Year)
+sem_dat$fPrevalence <- as.factor(sem_dat$Prevalence)
+sem_dat$fPrevalence <- recode_factor(sem_dat$fPrevalence, "0" = "Healthy", "1" = "Diseased")
+sem_dat <- drop_na(sem_dat, c("Prevalence", "GrazingScars"))
+
+mosaic <- ggplot(sem_dat)+
+  geom_mosaic(aes(x=product(fPrevalence, fGrazing), fill= fPrevalence))+
+  geom_mosaic_text(aes(x = product(fPrevalence, fGrazing), label = after_stat(.wt)), as.label=TRUE, size = 4)+
+  theme_bw(base_size=14)+
+  scale_fill_manual(labels=c("Healthy", "Diseased"), values = c('#228833', '#CCBB44'))+
+  xlab("Grazing scars")+
+  ylab("Wasting disease infection")+
+  theme(legend.title = element_blank(),
+        panel.grid = element_blank(),
+        # plot.margin = unit(0, "pt"),
+        legend.position = "bottom",
+        legend.text = element_text(size=10))
+mosaic / guide_area() + plot_layout(guides= "collect", heights = c(1, 0.1))
+
+# ggsave("figures/grazing_scar_mosaic_colors.jpg", width = 4, height = 3.5)
+ggsave("figures/grazing_scar_mosaic_colors.tiff", width = 4, height = 3.5)
+

@@ -6,13 +6,20 @@
 # epifauna abundances, grazing scars, and eelgrass wasting disease, across a latitudinal 
 # gradient with variation in seagrass structure and temperature. 
 
-# data inputs ###
-
+# library prep ####
+library(here)
+# note, the two files helpers.R and coefs.R are from the piecewiseSEM package (available on github: http://jslefche.github.io/piecewiseSEM/)
+# this analysis was conducted with piecewiseSEM version 2.1.0; however the developer versions of these files
+# were required to calculate standardized coefficients for GLMMs. 
+# this issue is likely superseded in new versions of the package but for continuity the scripts are included here. 
+source(here("code/helpers.R"))
+source(here("code/coefs.R"))
 library(lme4)
 library(dplyr)
 library(readr)
 library(piecewiseSEM)
 
+# data inputs ###
 dis <- read_csv("data/output/epiphyte_SEM_data_all_large.csv")
 # updating the SEM to compare the effects of using large vs all animals
 dis$BladeAreaLog <- log10(dis$BladeArea)

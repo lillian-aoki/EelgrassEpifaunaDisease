@@ -4,20 +4,18 @@
 # outputs are partial effect plots for the main manuscript
 
 # Partial predictor plots
+
+# librarys ####
 library(lme4)
 library(dplyr)
 library(readr)
 library(DHARMa)
 library(ggplot2)
-# library(GGally)
-# library(optimx)
 library(performance)
-library(piecewiseSEM)
 library(effects)
 library(ggeffects)
 library(patchwork)
-# library(sjPlot)
-# library(partR2)
+
 # data ###
 region_order <- c("AK", "BC", "WA", "OR", "BB", "SD")
 dis <- read_csv("data/output/epiphyte_SEM_data_all_large.csv")
