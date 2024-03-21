@@ -40,6 +40,7 @@ mur <- select(mur, c(Year, Meadow, Region, Site, TempAnomWarm_June))
 ghr <- select(ghr, c(Year, Meadow, Region, Site, TempAnomWarm_June))
 monthly$MonthW <- format(monthly$Month, "%B")
 monthly <- subset(monthly, MonthW=="June")
+monthly$Year <- as.numeric(format(monthly$Month, "%Y"))
 temps <- rbind(mur, ghr)
 temps <- left_join(temps, monthly)
 
@@ -189,7 +190,7 @@ sg_site2 <- sg %>%
 all_site <- full_join(sg_site2, epi_site, by=c("Year" = "year", "Region" = "region", "Meadow"))
 all_site <- full_join(meta_site, all_site)
 
-monthly$MonthW <- format(monthly$Month, "%B")
+# monthly$MonthW <- format(monthly$Month, "%B")
 june <- subset(monthly, MonthW=="June")
 june$Year <- as.integer(format(june$Month, "%Y"))
 june <- select(june, c(Year, Region, SiteCode=Site, Meadow, MonthlyMeanTemp_June=MonthlyMeanTemp))

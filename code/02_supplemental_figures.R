@@ -1,4 +1,4 @@
-## Figures for epifauna paper
+## 02-Supplemental Figures 
 
 # Last updated: 2024-03-19 by Lillian Aoki
 
