@@ -1,0 +1,186 @@
+Metadata and data dictionary for the eelgrass epifauna disease repository
+Data and code support the manuscript by Aoki et al. 
+"Seagrass wasting disease risk and intensity increase with invertebrate grazing across the northeastern Pacific"
+Submitted for publication to Ecology.
+
+GENERAL INFORMATION
+Author/Principal Investigator Information
+Name: Lillian Aoki
+ORCID: 0000-0002-2792-0523
+Institution: University of Oregon
+Email: laoki@uoregon.edu
+
+Author/Principal Investigator Information
+Name: Emmett Duffy
+ORCID: 0000-0001-8595-6391
+Institution: Smithsonian Institution 
+Email: DuffyE@si.edu
+
+Date of data collection: 2019-07-01 to 2021-07-28
+
+Geographic extent of data collection: N:55.739951 E:-117.10621 S:32.62535 W:-133.343143
+
+SHARING/ACCESS INFORMATION
+
+This repository is licensed under the MIT license and archived with a persistent DOI on Zenodo. The repository can be cited via the Zenodo DOI () or the related manuscript can be cited upon publication.  
+
+The dataset and code used here support the manuscript titled "Seagrass wasting disease risk and intensity increase with invertebrate grazing across the northeastern Pacific". A link will be provided upon publication.
+
+Much of the dataset is derived from the datasets available on BCO-DMO here: https://www.bco-dmo.org/project/776011
+The project includes ecological surveys of eelgrass wasting disease for 3 years. 
+
+Sea Surface Temperatures used in this analysis were derived from the MUR and G1SST products, available on the NASA PODAAC site, https://podaac.jpl.nasa.gov/.
+
+METHODOLOGICAL INFORMATION
+
+Detailed information on the collection of the dataset is available in the related manuscript and in the project handbook archived on BCO-DMO (https://datadocs.bco-dmo.org/docs/305/Eelgrass_disease/data_docs/eelgrass_disease_project_handbook_v1.2.pdf)
+
+DATA & FILE OVERVIEW
+
+Code file 01_data_prep.R takes in data files and aggregates for this analysis. 
+Input datasets are:
+2021_lesion_qPCR_conservative_results.csv - a file with results of pathogen load analysis from eelgrass tissue samples
+combined_site_metadata.csv - a file with site locations and other metadata for the eelgrass surveys
+combined_transect_survey_metrics.csv - a file with shoot metrics and disease data from the eelgrass surveys, aggregated at the level of transects (six 20-m transects within each site)
+EGWD_transect_data_v20230307_big_epi_with_BB_transect.csv - a file with compiled epifauna abundances from eelgrass surveys
+grazing_scars_compiled.csv - a file with aggregated data on grazing scar presence from eelgrass survey samples
+meter_level_shoot_metrics_with_diseaes.csv - a file with shoot morphology and diseae metrics for individual eelgrass shoots sampled during surveys (5 shoots per transect, 30 shoots per site) 
+monthly_mean_temps_mur_g1sst_9y_sites.csv - a file with compiled 1-km, gridded SST records from intertidal eelgrass sites combining nine years of SST records to calculate daily mean temperatures per month
+monthly_temp_anomlay_g1sst_9y_sites.csv - a file with temperature anomalies for reach month calculated relative to the 9-year climatological record for sites available in the G1SST product
+monthly_temp_anomaly_mur_9y_sites.csv - a file with temperature anomalies for reach month calculated relative to the 9-year climatological record for sites available in the MUR product
+Note, see the related repository, https://github.com/lillian-aoki/mur-sst-2019 for details on aggregating the SST data. 
+
+Output datasets are: 
+epifauna_for_region_specific_models_no_epiphytes.csv
+epifauna_site_for_plotting.csv
+epifauna_SEM_data_all_large.csv
+Variable lists for the output datasets are in the DATA-SPECIFIC INFORMATION below
+
+Code file 02_supplemental_figures.R provides code to create several supplemental figures for the manuscript. 
+
+Code file 03_meadow_scale_SEM.R provides code to analyze the dataset using picewise structural equation models; this analysis is conducted on two years of data out of the three year dataset due to data limitations, see Table S1. 
+
+Code file 04_partial_effect_plots.R provides code to produce partial effect plots to visualize effects found in the SEMs. 
+
+Code file 05_leaf_level_SEM.R provides code to run a simplified SEM that tests the direction of the relationship between grazing scar presence and disease metrics of prevalence and lesion area. 
+
+Code file 06_full_dataset_regression.R provides code to run a regression analysis on the full dataset (three years of data) to compare relative importance of different epifauna taxa on disease metrics and to confirm that the full dataset supports the findings of the SEM using 2 years of data. 
+
+Code file helpers.R and coefs.R are from the piecewiseSEM package (available on github: http://jslefche.github.io/piecewiseSEM/). This analysis was conducted with piecewiseSEM version 2.1.0; however the developer versions of these files were required to calculate standardized coefficients for GLMMs. This issue is likely superseded in new versions of the package but for continuity the scripts are included here.
+
+Code files can be run independently; however, outputs of 01_data_prep are required to run the subsequent files.
+
+DATA-SPECIFIC INFORMATION FOR: epifauna_for_region_specific_models_no_epiphytes.csv
+
+Number of variables: 22
+
+Number of cases/rows: 2369
+
+Variable List: 
+Year (year of sample collection) 
+Region (geographic region of sampling, AK = Alaska, BC = British Columbia, WA = Washington, OR = Oregon, BB = Bodega Bay, California, SD = San Diego, California)
+SiteCode (A-F, indicating individual seagrass meadow sites within the geographic region)
+TidalHeight (location of transect in the intertidal zone, U = upper (near upper edge of continuous eelgrass), L = lower (at least 4 m laterally towards the ocean from the upper))
+Transect (numeric value 1-6 indicating which transect was sampled)
+Blade (individual eelgrass leaf/blade sampled)
+Prevalence (categorical indicator of presence/absence of disease as measured by EeLISA, 0 = no diseaes, 1 = disease present)
+LesionArea (area of wasting disease lesions detected on the leaf, units are square cm)
+BladeArea (area of eelgrass blade/leaf, units are square cm)
+Meadow (combination of Region and SiteCode to give unique meadow identifier)
+site_unique_code (combination of Region, SiteCode, and Yeaer to give unique identifier)
+Epifauna_large (total abundance of large (>1 mm) epifaunal organisms at the site, averaged over 12 grab samples, log10-transformed, NOTE - BB abundances include 0.5-1mm size class as well)
+Ampithoid_large (total abundance of large (>1 mm) ampithoid amphipods at the site, averaged over 12 grab samples, log10-transformed, NOTE - BB abundances include 0.5-1mm size class as well)
+Lacuna_large (total abundance of large (>1 mm) Lacuna snail gastropods at the site, averaged over 12 grab samples, log10-transformed, NOTE - BB abundances include 0.5-1mm size class as well)
+Idoteid_large (total abundance of large (>1 mm) Idoteid isopods at the site, averaged over 12 grab samples, log10-transformed, NOTE - BB abundances include 0.5-1mm size class as well)
+Richness_large (richness of total epifuana samples at the site, based on lowest taxa of certainity in IDs, see Methods in the paper)
+Density (mean seagrass shoot density at the site, counted in 24 quadrats)
+CanopyHeight (sheath length plus longest leaf lenghth for 30 replicate shoots per site, in m)
+DensityLog (log10 of Density)
+Latitude (latitude of site sampling location)
+Longitude (longitude of site sampling location)
+
+Missing data codes: NA 
+
+Specialized formats or other abbreviations used: Note that 'blade' and 'leaf' refer to the same eelgrass tissue
+
+DATA-SPECIFIC INFORMATION FOR: epifauna_site_for_plotting.csv
+
+Number of variables: 97
+
+Number of cases/rows: 20
+
+Variable List: 
+Year (year of sample collection) 
+Region (geographic region of sampling, AK = Alaska, BC = British Columbia, WA = Washington, OR = Oregon, BB = Bodega Bay, California, SD = San Diego, California)
+SiteCode (A-F, indicating individual seagrass meadow sites within the geographic region)
+MonthlyMeanTemp_June (1-km daily gridded SST, see Methods in manuscript for details, degrees C)
+Latitude (latitude of site sampling location)
+Longitude (longitude of site sampling location)
+Density (mean seagrass shoot density at the site, counted in 24 quadrats)
+CanopyHeight (sheath length plus longest leaf lenghth for 30 replicate shoots per site, in m)
+DensityLog (log10 of Density)
+Prevalence (categorical indicator of presence/absence of disease as measured by EeLISA, 0 = no diseaes, 1 = disease present)
+LesionArea (area of wasting disease lesions detected on the leaf, units are square cm)
+LesionAreaLog (log10 of LesionArea + 0.01 for zero lesion area)
+MeadowYear (combination of Region, SiteCode, and Yeaer to give unique identifier, equivalent to site_unique_code)
+ite_unique_code (combination of Region, SiteCode, and Yeaer to give unique identifier)
+Epifauna_large (total abundance of large (>1 mm) epifaunal organisms at the site, averaged over 12 grab samples, log10-transformed, NOTE - BB abundances include 0.5-1mm size class as well)
+Ampithoid_large (total abundance of large (>1 mm) ampithoid amphipods at the site, averaged over 12 grab samples, log10-transformed, NOTE - BB abundances include 0.5-1mm size class as well)
+Lacuna_large (total abundance of large (>1 mm) Lacuna snail gastropods at the site, averaged over 12 grab samples, log10-transformed, NOTE - BB abundances include 0.5-1mm size class as well)
+Idoteid_large (total abundance of large (>1 mm) Idoteid isopods at the site, averaged over 12 grab samples, log10-transformed, NOTE - BB abundances include 0.5-1mm size class as well)
+Richness_large (richness of total epifuana samples at the site, based on lowest taxa of certainity in IDs, see Methods in the paper)
+
+Missing data codes: NA
+
+DATA-SPECIFIC INFORMATION FOR: epifauna_SEM_data_all_large.csv
+
+Number of variables: 47
+
+Number of cases/rows: 1350
+
+Variable List: <list variable name(s), description(s), unit(s) and value labels as appropriate for each>
+Meter (location along the 20-m transect marking the location of the sample)
+SampleDate (date when the sample was collected, YYYY-MM-DD)
+SampleId (combination of Region, Meadow, Transect, TidalHeight, Blade to give unique sample ID)
+Region (geographic region of sampling, AK = Alaska, BC = British Columbia, WA = Washington, OR = Oregon, BB = Bodega Bay, California, SD = San Diego, California)
+SiteCode (A-F, indicating individual seagrass meadow sites within the geographic region)
+TidalHeight (location of transect in the intertidal zone, U = upper (near upper edge of continuous eelgrass), L = lower (at least 4 m laterally towards the ocean from the upper))
+Transect (numeric value 1-6, indicating which transect was sampled)
+Blade (individual eelgrass leaf/blade sampled)
+LongestBladeLength (length of longest blade on the shoot, mm)
+LongestBladeWidth (width of longest blade on the shoot, mm)
+SheathLength (lenght of the sheath on the eelgrass shoot, mm)
+ScannedBladeLength (length of blade scanned for disease, usually 3rd rank sometimes 2nd see Methods, mm)
+ScannedBladeWidth (width of blade scanned for disease, usually 3rd rank sometimes 2nd see Methods, mm)
+PrevalenceHand (presence/absence of disease by visual inspection, 0 = no disease, 1 = disease present)
+GrazingScars (presence/absence of grazing scars by visual inspection, 0 = no scars present, 1 = scars present)
+BrokenTip (visual inspection of leaf tip, Y = broken, N = intact)
+EpiphyteDryMass (mass of dried epiphyte load in g)
+BladeAreaHand (leaf area as calculated by length and width measurements by hand for long leaves that were not fully scanned by EeLISA, see Aoki et al. 2022 in L&O for details)
+Notes (any releveant notes from processing of the sample)
+Year (year of sample collection) 
+NumberLeaves (number of leaves on the sample shoot, typically 4-6)
+Prevalence (categorical indicator of presence/absence of disease as measured by EeLISA, 0 = no diseaes, 1 = disease present)
+LesionArea (area of wasting disease lesions detected on the leaf, units are square cm)
+HealthyArea (area of healthy leaf tissue detected in the image of the leaf by EeLISA, units are square cm)
+BladeArea (area of eelgrass blade/leaf, units are square cm; note this is the larger of the value detected by EeLISA and measured by hand when both methods were used)
+Severity (proportion of leaf area covered by lesions, 0-1, calculated as LesionArea/BladeArea)
+EpiphytePerAreagcm2 (EpiphyteDryMass / BladeArea, epiphyte dry mass standardized by blade area in g per cm2)
+EpiphytePerAreamgcm2 (standardized epiphyte load as mg per cm2 of blade area)
+CanopyHeight (sheath length plus longest leaf lenghth for 30 replicate shoots per site, in m)
+Epifauna_all (total total abundance of all epifaunal organisms at the site, averaged over 12 grab samples, log10-transformed)
+Epifauna_large (total abundance of large (>1 mm) epifaunal organisms at the site, averaged over 12 grab samples, log10-transformed, NOTE - BB abundances include 0.5-1mm size class as well)
+Ampithoid_all (total total abundance of all ampithoid amphipods at the site, averaged over 12 grab samples, log10-transformed)
+Ampithoid_large (total abundance of large (>1 mm) ampithoid amphipods at the site, averaged over 12 grab samples, log10-transformed, NOTE - BB abundances include 0.5-1mm size class as well)
+Lacuna_all (total total abundance of all Lacuna snail gastropods at the site, averaged over 12 grab samples, log10-transformed)
+Lacuna_large (total abundance of large (>1 mm) Lacuna snail gastropods at the site, averaged over 12 grab samples, log10-transformed, NOTE - BB abundances include 0.5-1mm size class as well)
+Idoteid_all (total total abundance of all Idoteid isopods at the site, averaged over 12 grab samples, log10-transformed)
+Idoteid_large (total abundance of large (>1 mm) Idoteid isopods at the site, averaged over 12 grab samples, log10-transformed, NOTE - BB abundances include 0.5-1mm size class as well)
+Latitude (latitude of site sampling location)
+Richness_all (richness of total epifuana samples at the site, based on lowest taxa of certainity in IDs, see Methods in the paper)
+Richness_large (richness of total large (> 1mm) epifuana samples at the site, based on lowest taxa of certainity in IDs, see Methods in the paper, NOTE - BB abundances include 0.5-1mm size class as well)
+TidalHeightBinary (conversion of TidalHeight from categorical to binary variable for ease of working with SEM, 0 = Lower, 1 = Upper)
+YearBinary (conversion of Year from categorical to binary variable for ease of working with SEM, 0 = 2019, 1 = 2021; 2020 data excluded due to missing values see Table S1 of manuscript)
+Meadow (combination of Region and SiteCode to give unique meadow identifier)
+
+Missing data codes: NA

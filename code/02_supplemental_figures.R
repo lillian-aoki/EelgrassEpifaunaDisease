@@ -8,6 +8,7 @@
 ## (3) a map of study locations with temperature 
 ## (4) relative abundance of eelgrass grazers within epifauna community
 ## (5) mosaic plot of grazing scar and disease prevalence
+## (6) pathogen loads in lesioned tissue via qPCR analysis
 
 # libraries ####
 library(tidyverse)
@@ -26,8 +27,9 @@ site_dat$Region <- ordered(site_dat$Region, levels=region_order)
 epi <- read_csv("data/input/EGWD_transect_data_v20230307_big_epi_with_BB_transect.csv")
 meta <- read_csv("data/input/combined_site_metadata.csv")
 sem_dat <- read_csv("data/output/epiphyte_SEM_data_all_large.csv")
+conservative <- read_csv("data/input/2021_lesion_qPCR_conservative_results.csv")
 
-# epifauna distributions ####
+# (1) epifauna distributions ####
 amp_plot <- ggplot(site_dat, aes(x=Latitude, y=Ampithoid_large, color=fYear))+
   geom_point(size=1.5, alpha=0.75)+
   # xlab("")+
@@ -86,7 +88,7 @@ lac_plot / ido_plot / amp_plot / guide_area() + plot_layout(guides="collect", he
 # ggsave("figures/taxa_latitude_colors.jpg", width = 4, height =8.25 )
 ggsave("figures/taxa_latitude_colors.tiff", width = 4, height =8.25 )
 
-# seagrass structure ####
+# (2) seagrass structure ####
 
 ggplot(site_dat, aes(x=Density, y=CanopyHeight, color=Region, shape=fYear, size=Prevalence))+geom_point(alpha=0.8)+
   scale_x_continuous(trans = "log10")+
@@ -101,7 +103,7 @@ ggplot(site_dat, aes(x=Density, y=CanopyHeight, color=Region, shape=fYear, size=
 # ggsave("figures/seagrass_structure_prevalence.jpg", width = 4, height = 6)
 ggsave("figures/seagrass_structure_prevalence.tiff", width = 4, height = 6)
 
-# site map ####
+# (3) site map ####
 sites <- na.omit(site_dat)
 sites <- subset(sites, Year=="2019")
 sites_sf <- st_as_sf(sites, coords = c("Longitude", "Latitude"), crs = 4326, agr = "constant")
@@ -116,7 +118,7 @@ mapFull <- ggplot(data = world) +
   coord_sf(xlim = c(max(sites$Longitude), min(sites$Longitude-4)), 
            ylim = c(max(sites$Latitude), min(sites$Latitude)),
            default_crs = sf::st_crs(4326))+
-  scale_color_continuous(type="viridis", name="Mean Daily Temperature\n(June 2019)",
+  scale_color_continuous(type="viridis", name="Mean Daily\nSea Surface Temperature\n(June 2019)",
                          breaks=c(10, 12, 14, 16, 18, 20))+
   xlab("Longitude")+
   ylab("Latitude")+
@@ -135,7 +137,7 @@ mapFull +
 ggsave("figures/map_study_sites.jpg", width = 4, height = 6)
 ggsave("figures/map_study_sites.tiff", width = 4, height = 6)
 
-# relative abundance of eelgrass grazers ####
+# (4) relative abundance of eelgrass grazers ####
 #transect level epifauna - need to collapse to site
 meta19 <- subset(meta, Year=="2019")
 loc19 <- select(meta19, c("Region","SiteCode", "TidalHeight", "Transect", "TransectBeginDecimalLatitude",
@@ -192,7 +194,7 @@ ggplot(epi_summ_long, aes(x=meadow, y=value, fill=taxon))+
 
 ggsave("figures/rel_abun.tiff", width=8, height = 6)
 
-# grazing-prevalence mosaic ####
+# (5) grazing-prevalence mosaic ####
 sem_dat$fGrazing <- as.factor(sem_dat$GrazingScars)
 sem_dat$fGrazing <- recode_factor(sem_dat$fGrazing, "0" = "Absent", "1" = "Present")
 sem_dat$fYear <- as.factor(sem_dat$Year)
@@ -217,3 +219,36 @@ mosaic / guide_area() + plot_layout(guides= "collect", heights = c(1, 0.1))
 # ggsave("figures/grazing_scar_mosaic_colors.jpg", width = 4, height = 3.5)
 ggsave("figures/grazing_scar_mosaic_colors.tiff", width = 4, height = 3.5)
 
+# (6) pathogen loads ####
+con_summ <- conservative %>%
+  group_by(Region, Site, Tissue) %>%
+  summarise(mean_cells_per_mg=mean(cells_per_mg), count_positive=length(which(cells_per_mg>0)), count_samples=length(cells_per_mg),
+            sd_cells_per_mg=sd(cells_per_mg), se_cells_per_mg=sd_cells_per_mg/sqrt(count_samples)) %>%
+  mutate(prop_positive=count_positive/count_samples, se_prop_positive = sqrt(prop_positive*(1-prop_positive)/count_samples))
+con_summ$Region <- ordered(con_summ$Region, levels=region_order)
+
+lz_prev <- ggplot(con_summ[con_summ$Tissue=="L",], aes(x=Region, color=Site, y=prop_positive, ymin=prop_positive-se_prop_positive, ymax=prop_positive+se_prop_positive))+
+  geom_errorbar(position=position_dodge(width = 0.5))+
+  geom_point(position=position_dodge(width = 0.5), size=4)+
+  scale_color_manual(values=c('#4477AA', '#EE6677', '#228833', '#CCBB44', '#66CCEE', '#AA3377'))+
+  scale_x_discrete(labels=c("San\nDiego","Bodega\nBay","Oregon","Washington","British\nColumbia","Alaska"), drop=FALSE, limits=rev)+
+  ylab(expression(paste(italic("L. zosterae")," prevalence")))+
+  labs(tag = "(a)   ")+
+  theme_bw(base_size = 14)+
+  theme(panel.grid = element_blank(), axis.text.x = element_text(size=10, angle = 45, vjust=0.75))
+lz_prev
+
+lz_int <- ggplot(con_summ[con_summ$Tissue=="L",], aes(x=Region, color= Site, y=mean_cells_per_mg))+
+  geom_hline(yintercept = mean(conservative$cells_per_mg[conservative$Tissue=="L"]), linetype="dashed", color="darkgrey")+ # global mean of dataset
+  geom_errorbar(data= con_summ[con_summ$Tissue=="L",], aes(ymax=mean_cells_per_mg+se_cells_per_mg, ymin=mean_cells_per_mg-se_cells_per_mg), position=position_dodge(width = 0.5))+
+  geom_point(data= con_summ[con_summ$Tissue=="L",], position=position_dodge(width = 0.5), size=4)+
+  scale_color_manual(values=c('#4477AA', '#EE6677', '#228833', '#CCBB44', '#66CCEE', '#AA3377'))+
+  scale_x_discrete(labels=c("San\nDiego","Bodega\nBay","Oregon","Washington","British\nColumbia","Alaska"), drop=FALSE, limits=rev)+
+  ylab(expression(paste(italic("L. zosterae "), "cells per mg leaf tissue")))+
+  labs(tag = "(b)   ")+
+  theme_bw(base_size = 14)+
+  theme(panel.grid = element_blank(), axis.text.x = element_text(size=10, angle = 45, vjust=0.75))
+lz_int
+
+lz_prev / lz_int + plot_layout(guides="collect")
+ggsave(filename = "figures/lz_qpcr_results_site.tiff", width = 6, height = 6)

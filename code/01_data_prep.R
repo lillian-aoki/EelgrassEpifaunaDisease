@@ -170,7 +170,7 @@ epi_sg_site <- rename(epi_sg_site, Region = region, Year = year)
 epi_sg_site <- full_join(epi_sg_site, meta_site)
 
 blade_vars <- dis %>%
-  select(c("Year", "Region", "SiteCode", "TidalHeight", "Blade", "Prevalence", "LesionArea", "BladeArea")) %>%
+  select(c("Year", "Region", "SiteCode", "TidalHeight", "Transect", "Blade", "Prevalence", "LesionArea", "BladeArea")) %>%
   mutate(BladeAreaLog=log10(BladeArea), Meadow=paste(Region, SiteCode, sep = "_"))
 
 all_epi <- inner_join(blade_vars, epi_sg_site, by=c("Year", "Region", "Meadow", "SiteCode"))

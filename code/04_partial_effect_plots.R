@@ -15,8 +15,9 @@ library(performance)
 library(effects)
 library(ggeffects)
 library(patchwork)
+library(emmeans)
 
-# data ###
+# data ####
 region_order <- c("AK", "BC", "WA", "OR", "BB", "SD")
 dis <- read_csv("data/output/epiphyte_SEM_data_all_large.csv")
 dis$Region <- ordered(dis$Region, levels=region_order)
@@ -283,3 +284,15 @@ h <- ples_amp # + theme(legend.position = "")
 h
 # ggsave("figures/2h_gz_sem_les_amp.jpg", width = 4, height=4)
 ggsave("figures/2h_gz_sem_les_amp.tiff", width = 4, height=4)
+
+# post-hoc contrasts
+# re-set model to back-transform the lesion area estimates
+les_epi_2 <- lmer(log10(LesionArea) ~ BladeAreaLog + EpiphyteLog + GrazingScars + Epifauna + CanopyHeight + DensityLog + 
+                    TempAnomWarm_June + MonthlyMeanTemp_June + 
+                    TidalHeightBinary + YearBinary +
+                    (1|Region) +(1|Meadow), 
+                  data=les_large)
+emm1 <- emmeans(les_epi_2, specs = pairwise ~ GrazingScars, type="response")
+emm1$emmeans
+emm1$contrasts
+plot(emm1)
