@@ -5,16 +5,22 @@
 
 # libraries ####
 library(here)
+source(here("code/helpers.R"))
+source(here("code/coefs.R"))
 # note, the two files helpers.R and coefs.R are from the piecewiseSEM package (available on github: http://jslefche.github.io/piecewiseSEM/)
 # this analysis was conducted with piecewiseSEM version 2.1.0; however the developer versions of these files
 # were required to calculate standardized coefficients for GLMMs. 
 # this issue is likely superseded in new versions of the package but for continuity the scripts are included here. 
-source(here("code/helpers.R"))
-source(here("code/coefs.R"))
+# these lines will install the version of piecewiseSEM that was used for writing the code. 
+# latest version has some issues with the updated R version - for simplicity, sticking with the 2.1 version. 
+library(devtools)
+current_lib_loc <- .libPaths()[1]
+old_versions <- "/Library/Frameworks/R.framework/Versions/4.4-arm64/Resources/old_versions_lib"
+# install_version("piecewiseSEM", version = "2.1.2", lib=old_versions) only needed for the older version
 library(lme4)
 library(dplyr)
 library(readr)
-library(piecewiseSEM)
+library(piecewiseSEM, lib.loc = old_versions)
 # data input ####
 dis <- read_csv("data/output/epiphyte_SEM_data_all_large.csv")
 # same data as for complex SEM because no grazing scars in 2020 except WA
