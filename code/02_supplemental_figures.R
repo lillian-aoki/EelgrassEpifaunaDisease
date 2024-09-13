@@ -17,7 +17,7 @@ library(tidyverse)
 library(sf)
 library(rnaturalearth)
 library(ggmosaic)
-
+library(broom)
 # data input ####
 region_order <- c("AK", "BC", "WA", "OR", "BB", "SD")
 site_dat <- read_csv("data/output/epifauna_site_for_plotting.csv")
@@ -177,6 +177,7 @@ epi_summ$ido_per <- epi_summ$ido_abun_large/epi_summ$total_abun_large
 epi_summ$amp_per <- epi_summ$amp_abun_large/epi_summ$total_abun_large
 summary(epi_summ$gz_per)
 epi_summ %>% filter(gz_per>0.5) %>% filter(total_abun_large>1) %>% select(c(site_unique_code, lac_per, ido_per, amp_per))
+epi_summ %>% filter(lac_per>0.15) %>% filter(total_abun_large>1) %>% select(c(site_unique_code, lac_per, ido_per, amp_per))
 
 ggplot(epi_summ_long, aes(x=meadow, y=value, fill=taxon))+
   geom_rect(aes(xmin="BB_A", xmax="BB_F", ymin=0, ymax=20), linetype="dashed", fill="grey90")+
@@ -209,6 +210,7 @@ mosaic <- ggplot(sem_dat)+
   scale_fill_manual(labels=c("Healthy", "Diseased"), values = c('#228833', '#CCBB44'))+
   xlab("Grazing scars")+
   ylab("Wasting disease infection")+
+  labs(tag = "(b)")+
   theme(legend.title = element_blank(),
         panel.grid = element_blank(),
         # plot.margin = unit(0, "pt"),
@@ -216,8 +218,15 @@ mosaic <- ggplot(sem_dat)+
         legend.text = element_text(size=10))
 mosaic / guide_area() + plot_layout(guides= "collect", heights = c(1, 0.1))
 
-# ggsave("figures/grazing_scar_mosaic_colors.jpg", width = 4, height = 3.5)
-ggsave("figures/grazing_scar_mosaic_colors.tiff", width = 4, height = 3.5)
+# ggsave("figures/4b_grazing_scar_mosaic_colors.jpg", width = 4, height = 3.5)
+ggsave("figures/4b_grazing_scar_mosaic_colors.tiff", width = 4, height = 3.5)
+
+# proportion test for grazing and disease over full dataet
+length(which(sem_dat$GrazingScars==0)) # n of 'trials' without grazing
+length(which(sem_dat$GrazingScars==1)) # n of 'trials' with grazing
+length(which(sem_dat$GrazingScars==0 & sem_dat$Prevalence==1)) # n of 'successes' i.e. disease present without grazing
+length(which(sem_dat$GrazingScars==1 & sem_dat$Prevalence==1)) # n of 'successes' i.e. disease present with grazing
+prop.test(x=c(327, 247), n=c(931, 384))
 
 # (6) pathogen loads ####
 con_summ <- conservative %>%
