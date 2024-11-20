@@ -11,9 +11,9 @@ library(effects)
 library(ggplot2)
 library(sjPlot)
 library(ggeffects)
-library(knitr)
+# library(knitr)
 library(DHARMa)
-# library(ggplot2)
+library(ggplot2)
 # data input ####
 all_epi <- read_csv("data/output/epifauna_for_region_specific_models_no_epiphyte.csv")
 all_epi$fYear <- as.factor(all_epi$Year)
@@ -76,7 +76,7 @@ plot(predictorEffects(prev1))
 plot(predictorEffects(prev1, partial.residuals=T))
 performance(prev1)
 
-prev_names <- c("Year\n 2020", "Lacuna\n snails","Leaf\n area","Year\n 2021","Shoot\n density", "Canopy\n height", 
+prev_names <- c("Year\n 2020", expression(atop(italic(Lacuna),"snails")),"Leaf\n area","Year\n 2021","Shoot\n density", "Canopy\n height", 
                 "ampithoid\n amphipods", "idoteid\n isopods")
 prev_names <- rev(prev_names)
 prev_plot <- plot_model(prev1, 
@@ -151,7 +151,7 @@ les2 <- lmer(LesionAreaLog ~ BladeAreaLog +
                Ampithoid_large + Lacuna_large + Idoteid_large +
                fYear + (1|Meadow) + (1|Region), 
              data=les)
-les_names <- c("ampithoid\n amphipods", "Year\n 2021", "idoteid\n isopods", "Leaf\n area", "Lacuna\n snails", "Year\n 2020")
+les_names <- c("ampithoid\n amphipods", "Year\n 2021", "idoteid\n isopods", "Leaf\n area", expression(atop(italic(Lacuna),"snails")), "Year\n 2020")
 les_plot <- plot_model(les2, 
                        type="std",
                        sort.est = T,
