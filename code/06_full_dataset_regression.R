@@ -76,8 +76,9 @@ plot(predictorEffects(prev1))
 plot(predictorEffects(prev1, partial.residuals=T))
 performance(prev1)
 
-prev_names <- c("Year\n 2020", expression(atop(italic(Lacuna),"snails")),"Leaf\n area","Year\n 2021","Shoot\n density", "Canopy\n height", 
-                "ampithoid\n amphipods", "idoteid\n isopods")
+prev_names <- c("Year\n2020", expression(atop(atop(NA, atop(textstyle(italic(Lacuna)),textstyle("snails"))), NA)),
+                "Leaf\narea","Year\n2021","Shoot\ndensity", "Canopy\nheight", 
+                "ampithoid\namphipods", "idoteid\nisopods")
 prev_names <- rev(prev_names)
 prev_plot <- plot_model(prev1, 
                         type="std", sort.est = TRUE,
@@ -151,7 +152,8 @@ les2 <- lmer(LesionAreaLog ~ BladeAreaLog +
                Ampithoid_large + Lacuna_large + Idoteid_large +
                fYear + (1|Meadow) + (1|Region), 
              data=les)
-les_names <- c("ampithoid\n amphipods", "Year\n 2021", "idoteid\n isopods", "Leaf\n area", expression(atop(italic(Lacuna),"snails")), "Year\n 2020")
+les_names <- c("ampithoid\namphipods", "Year\n2021", "idoteid\nisopods", "Leaf\narea", 
+               expression(atop(atop(NA, atop(textstyle(italic(Lacuna)), textstyle("snails"))), NA)), "Year\n2020")
 les_plot <- plot_model(les2, 
                        type="std",
                        sort.est = T,
